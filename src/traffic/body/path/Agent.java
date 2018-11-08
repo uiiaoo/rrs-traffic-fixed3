@@ -6,8 +6,6 @@ import rescuecore2.worldmodel.*;
 import rescuecore2.standard.entities.*;
 import rescuecore2.misc.geometry.*;
 
-import org.uncommons.maths.number.NumberGenerator;
-
 import java.util.*;
 
 public class Agent
@@ -274,8 +272,7 @@ public class Agent
     private double makeVelocityLimit()
     {
         StandardEntityURN urn = this.unwrap().getStandardURN();
-        NumberGenerator<Double> generator = Environment.getVelocityLimitGenerator(urn);
-        return generator.nextValue();
+        return Environment.AGENT_VELOCITY_MEAN;
     }
 
     public List<PathElement> getPath()
