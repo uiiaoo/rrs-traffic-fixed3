@@ -11,4 +11,4 @@ mkdir  $BLD_DIR
 cd $SRC_DIR
 CP=`find $LIB_DIR -name '*.jar' | awk -v ORS=':' '{print}'`
 FP=`find . -name '*.java'`
-javac -classpath "$CP." -d $BLD_DIR $FP && echo "[OK] Build."
+javac -Xlint:deprecation -classpath "$CP." -d $BLD_DIR $FP && echo "[OK] Build."

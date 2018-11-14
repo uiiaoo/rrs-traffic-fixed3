@@ -16,33 +16,24 @@ import java.util.stream.*;
 
 public class PassableShapeManager
 {
-    private Map<EntityID, Area> completeAreaShapes;
-    private Map<EntityID, Area> simpleAreaShapes;
-
-    private Map<EntityID, Area> completeBlockadeShapes;
-    private Map<EntityID, Area> simpleBlockadeShapes;
+    private Map<Quality, Map<EntityID, Area>> shapeMap = new HashMap<>();
 
     public PassableShapeManager(StandardWorldModel model)
     {
-        this.completeAreaShapes = new HashMap<>();
-        this.simpleAreaShapes = new HashMap<>();
-        this.completeBlockadeShapes = new HashMap<>();
-        this.simpleBlockadeShapes = new HashMap<>();
-
-        Stream<rescuecore2.standard.entities.Area> areas;
-        areas = model.getAllEntities().stream()
+        Stream<rescuecore2.standard.entities.Area> areas = model
+            .getAllEntities()
+            .stream()
             .filter(rescuecore2.standard.entities.Area.class::isInstance)
             .map(rescuecore2.standard.entities.Area.class::cast);
 
-        Map<EntityID, List<AreaOutline>> areaOutlines = makeAreaOutlines(areas);
+        Map<EntityID, List<AreaOutline>> outlines = makeAreaOutlines(areas);
 
         areas.forEach(a -> {
-            EntityID id = a.getID();
-            Area completeShape = ShrinkArea.run(a, areaOutlines);
-            Area simpleShape = ShrinkArea.runSimply(a, areaOutlines);
-
-            this.completeAreaShapes.put(id, completeShape);
-            this.simpleAreaShapes.put(id, simpleShape);
+            for (Quality quality : Quality.values())
+            {
+                Area shape = quality.shrink(a, outlines);
+                shapeMap.get(quality).put(a.getID(), shape);
+            }
         });
     }
 
