@@ -7,11 +7,11 @@ public class AgentLog
 {
     public static void debug(EntityID agent, String message)
     {
-        //Logger.debug("[@" + agent + "] " + message);
+        Logger.debug("[@" + agent + "] " + message);
     }
 
     public static void error(EntityID agent, String message)
     {
-        //Logger.debug("[@" + agent + "] " + message);
+        Logger.error("[@" + agent + "] " + message);
     }
 }

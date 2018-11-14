@@ -10,11 +10,10 @@ import rescuecore2.messages.control.*;
 import rescuecore2.misc.geometry.*;
 
 import traffic.body.*;
-import traffic.view.WorldView;
-import traffic.util.Environment;
+import traffic.view.*;
+import traffic.util.*;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import java.util.*;
 
 public class Simulator extends StandardSimulator implements GUIComponent
@@ -119,7 +118,6 @@ public class Simulator extends StandardSimulator implements GUIComponent
     private void handleUnload(AKUnload akUnload)
     {
         EntityID agent = akUnload.getAgentID();
-
         this.agentActionManager.unloadHumanFromAgent(agent);
     }
 

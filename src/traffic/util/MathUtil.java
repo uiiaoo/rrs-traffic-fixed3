@@ -34,6 +34,7 @@ public class MathUtil
 
         if (p2.equals(p3)) return angle(p1, p2, p4);
         if (p4.equals(p1)) return angle(p3, p4, p1);
+
         return Double.NaN;
     }
 

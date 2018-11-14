@@ -4,9 +4,7 @@ import traffic.body.geom.*;
 import traffic.util.*;
 
 import rescuecore2.worldmodel.*;
-import rescuecore2.standard.entities.StandardWorldModel;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.Blockade;
+import rescuecore2.standard.entities.*;
 
 import java.awt.Shape;
 import java.awt.Graphics2D;
@@ -31,22 +29,21 @@ public class PassableShapeManager
         this.completeBlockadeShapes = new HashMap<>();
         this.simpleBlockadeShapes = new HashMap<>();
 
-        List<rescuecore2.standard.entities.Area> areas = model.getAllEntities()
-            .stream()
-            .filter(e -> e instanceof rescuecore2.standard.entities.Area)
-            .map(e -> (rescuecore2.standard.entities.Area)e)
-            .collect(Collectors.toList());
+        Stream<rescuecore2.standard.entities.Area> areas;
+        areas = model.getAllEntities().stream()
+            .filter(rescuecore2.standard.entities.Area.class::isInstance)
+            .map(rescuecore2.standard.entities.Area.class::cast);
 
         Map<EntityID, List<AreaOutline>> areaOutlines = makeAreaOutlines(areas);
-        for (rescuecore2.standard.entities.Area area : areas)
-        {
-            EntityID id = area.getID();
-            Area completeShape = ShrinkArea.run(area, areaOutlines);
-            Area simpleShape = ShrinkArea.runSimply(area, areaOutlines);
+
+        areas.forEach(a -> {
+            EntityID id = a.getID();
+            Area completeShape = ShrinkArea.run(a, areaOutlines);
+            Area simpleShape = ShrinkArea.runSimply(a, areaOutlines);
 
             this.completeAreaShapes.put(id, completeShape);
             this.simpleAreaShapes.put(id, simpleShape);
-        }
+        });
     }
 
     public Area computeSimple(EntityID id, StandardWorldModel model)
@@ -101,16 +98,16 @@ public class PassableShapeManager
     }
 
     private static Map<EntityID, List<AreaOutline>> makeAreaOutlines(
-        List<rescuecore2.standard.entities.Area> areas)
+        Stream<rescuecore2.standard.entities.Area> areas)
     {
         Map<EntityID, List<AreaOutline>> retval = new HashMap<>();
-        for (rescuecore2.standard.entities.Area area : areas)
-        {
-            EntityID id = area.getID();
+
+        areas.forEach(a -> {
+            EntityID id = a.getID();
             double ar = Environment.AGENT_RADIUS;
-            List<AreaOutline> outlines = AreaOutline.make(area, ar);
+            List<AreaOutline> outlines = AreaOutline.make(a, ar);
             retval.put(id, outlines);
-        }
+        });
 
         return retval;
     }

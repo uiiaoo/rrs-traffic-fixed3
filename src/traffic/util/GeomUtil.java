@@ -376,8 +376,9 @@ public class GeomUtil
 
     public static List<Point2D> toClockwise(List<Point2D> ps)
     {
-        double cross = GeometryTools2D.pointsToLines(ps, true)
-            .stream()
+        List<Line2D> ls = GeometryTools2D.pointsToLines(ps, true);
+
+        double cross = ls.stream()
             .mapToDouble(l -> MathUtil.cross(l.getOrigin(), l.getEndPoint()))
             .sum();
 
@@ -386,48 +387,29 @@ public class GeomUtil
         return ps;
     }
 
-    public static boolean isEqual(Line2D line1, Line2D line2)
+    public static boolean isEqual(Line2D l1, Line2D l2)
     {
-        if (line1 == null) return false;
-        if (line2 == null) return false;
+        if (l1 == null) return false;
+        if (l2 == null) return false;
 
-        Point2D o1 = line1.getOrigin();
-        Point2D e1 = line1.getEndPoint();
-        Point2D o2 = line2.getOrigin();
-        Point2D e2 = line2.getEndPoint();
+        Point2D o1 = l1.getOrigin();
+        Point2D e1 = l1.getEndPoint();
+        Point2D o2 = l2.getOrigin();
+        Point2D e2 = l2.getEndPoint();
 
         return (o1.equals(o2) && e1.equals(e2)) ||
                (o1.equals(e2) && e1.equals(o2));
     }
 
-    public static boolean almostEqual(Point2D p1, Point2D p2)
+    public static Point2D makeMedian(Line2D l)
     {
-        if (p1 == null) return false;
-        if (p2 == null) return false;
-
-        Vector2D vec = (new Line2D(p1, p2)).getDirection();
-        return GeometryTools2D.nearlyZero(vec.getX()) &&
-               GeometryTools2D.nearlyZero(vec.getY());
+        return l.getPoint(0.5);
     }
 
-
-    public static Point2D makeMedian(Line2D line)
-    {
-        Point2D o = line.getOrigin();
-        Point2D e = line.getEndPoint();
-
-        double x1 = o.getX();
-        double y1 = o.getY();
-        double x2 = e.getX();
-        double y2 = e.getY();
-
-        return new Point2D((x1+x2)/2.0, (y1+y2)/2.0);
-    }
-
-    public static Point2D computeCentroid(List<Point2D> vertices) {
+    public static Point2D computeCentroid(List<Point2D> vs) {
         return new Point2D(
-            vertices.stream().mapToDouble(Point2D::getX).average().orElse(0.0),
-            vertices.stream().mapToDouble(Point2D::getY).average().orElse(0.0));
+            vs.stream().mapToDouble(Point2D::getX).average().orElse(0.0),
+            vs.stream().mapToDouble(Point2D::getY).average().orElse(0.0));
     }
 
     public static Area makeArea(Line2D l1, Line2D l2)
@@ -440,26 +422,25 @@ public class GeomUtil
         return makeArea(new Point2D[]{p1, p2, p3, p4});
     }
 
-    public static Area makeArea(Point2D[] points)
+    public static Area makeArea(Point2D[] ps)
     {
         Path2D path = new Path2D.Double();
-        path.moveTo(points[0].getX(), points[0].getY());
+        path.moveTo(ps[0].getX(), ps[0].getY());
 
-        for (int i=1; i<points.length; ++i)
+        for (int i=1; i<ps.length; ++i)
         {
-            Point2D point = points[i];
-            path.lineTo(point.getX(), point.getY());
+            path.lineTo(ps[i].getX(), ps[i].getY());
         }
 
         path.closePath();
         return new Area(path);
     }
 
-    public static Area makeExpandedArea(Point2D point, double width)
+    public static Area makeExpandedArea(Point2D p, double w)
     {
-        double d = width * 2.0;
-        double x = point.getX() - width;
-        double y = point.getY() - width;
+        double d = w * 2.0;
+        double x = p.getX() - w;
+        double y = p.getY() - w;
 
         Ellipse2D ellipse = new Ellipse2D.Double(x, y, d, d);
         return new Area(ellipse);
@@ -475,12 +456,12 @@ public class GeomUtil
         return d1 < d2 ? l1 : l2;
     }
 
-    public static java.awt.geom.Line2D convert2awt(Line2D line)
+    public static java.awt.geom.Line2D convert2awt(Line2D l)
     {
-        double x1 = line.getOrigin().getX();
-        double x2 = line.getEndPoint().getX();
-        double y1 = line.getOrigin().getY();
-        double y2 = line.getEndPoint().getY();
+        double x1 = l.getOrigin().getX();
+        double x2 = l.getEndPoint().getX();
+        double y1 = l.getOrigin().getY();
+        double y2 = l.getEndPoint().getY();
 
         return new java.awt.geom.Line2D.Double(x1, y1, x2, y2);
     }
