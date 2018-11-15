@@ -16,7 +16,7 @@ import java.util.stream.*;
 
 public class PassableShapeManager
 {
-    private Map<Quality, Map<EntityID, Area>> shapeMap = new HashMap<>();
+    private Map<Quality, Map<EntityID, Area>> shapeMaps = new HashMap<>();
 
     public PassableShapeManager(StandardWorldModel model)
     {
@@ -32,7 +32,7 @@ public class PassableShapeManager
             for (Quality quality : Quality.values())
             {
                 Area shape = quality.shrink(a, outlines);
-                shapeMap.get(quality).put(a.getID(), shape);
+                shapeMaps.get(quality).put(a.getID(), shape);
             }
         });
     }
@@ -127,6 +127,7 @@ public class PassableShapeManager
     }
 
     //  @TEST
+    //  {{{
     private List<Shape> drawingShapes = new LinkedList<>();
     private List<Shape> areaShapes  = new LinkedList<>();
     private List<Shape> blockadeShapes  = new LinkedList<>();
@@ -198,4 +199,5 @@ public class PassableShapeManager
             }
         }
     }
+    //  }}}
 }
